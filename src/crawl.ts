@@ -1,5 +1,3 @@
-import { URL } from "node:url";
-
 export function normalizeURL(inputURL: string): string {
   const parsed = new URL(inputURL);
   const hostname = parsed.hostname;
