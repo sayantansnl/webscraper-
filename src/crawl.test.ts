@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import {
+  extractPageData,
   getFirstParagraphFromHTML,
   getHeadingFromHTML,
   getImagesFromHTML,
@@ -182,6 +183,64 @@ describe("Extract Images", () => {
       "https://crawler-test.com/logo.png",
       "https://cdn.boot.dev/banner.jpg",
     ];
+    expect(actual).toEqual(expected);
+  });
+});
+
+describe("Extract Page Data", () => {
+  test("extractPageData basic", () => {
+    const inputURL = "https://crawler-test.com";
+    const inputBody = `
+    <html><body>
+      <h1>Test Title</h1>
+      <p>This is the first paragraph.</p>
+      <a href="/link1">Link 1</a>
+      <img src="/image1.jpg" alt="Image 1">
+    </body></html>
+  `;
+
+    const actual = extractPageData(inputBody, inputURL);
+    const expected = {
+      url: "https://crawler-test.com",
+      heading: "Test Title",
+      first_paragraph: "This is the first paragraph.",
+      outgoing_links: ["https://crawler-test.com/link1"],
+      image_urls: ["https://crawler-test.com/image1.jpg"],
+    };
+
+    expect(actual).toEqual(expected);
+  });
+
+  test("extract_page_data main section priority", () => {
+    const inputURL = "https://crawler-test.com";
+    const inputBody = `
+    <html><body>
+      <nav><p>Navigation paragraph</p></nav>
+      <main>
+        <h1>Main Title</h1>
+        <p>Main paragraph content.</p>
+      </main>
+    </body></html>
+  `;
+
+    const actual = extractPageData(inputBody, inputURL);
+    expect(actual.heading).toEqual("Main Title");
+    expect(actual.first_paragraph).toEqual("Main paragraph content.");
+  });
+
+  test("extract_page_data missing elements", () => {
+    const inputURL = "https://crawler-test.com";
+    const inputBody = `<html><body><div>No h1, p, links, or images</div></body></html>`;
+
+    const actual = extractPageData(inputBody, inputURL);
+    const expected = {
+      url: "https://crawler-test.com",
+      heading: "",
+      first_paragraph: "",
+      outgoing_links: [],
+      image_urls: [],
+    };
+
     expect(actual).toEqual(expected);
   });
 });
