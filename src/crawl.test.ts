@@ -2,6 +2,8 @@ import { describe, expect, test } from "vitest";
 import {
   getFirstParagraphFromHTML,
   getHeadingFromHTML,
+  getImagesFromHTML,
+  getURLsFromHTML,
   normalizeURL,
 } from "./crawl.js";
 
@@ -98,6 +100,88 @@ describe("Extract first paragraph", () => {
     const inputBody = `<html><body><h1>Title</h1></body></html>`;
     const actual = getFirstParagraphFromHTML(inputBody);
     const expected = "";
+    expect(actual).toEqual(expected);
+  });
+});
+
+describe("Extract URLs", () => {
+  test("getURLsFromHTML absolute", () => {
+    const inputURL = "https://crawler-test.com";
+    const inputBody = `<html><body><a href="/path/one"><span>Boot.dev</span></a></body></html>`;
+
+    const actual = getURLsFromHTML(inputBody, inputURL);
+    const expected = ["https://crawler-test.com/path/one"];
+
+    expect(actual).toEqual(expected);
+  });
+
+  test("getURLsFromHTML multiple", () => {
+    const inputURL = "https://crawler-test.com";
+    const inputBody = `<html><body><a href="/path/some">I am rock!</a><a href="/path/nowhere">Most Wanted Cars are better</a></body></html>`;
+
+    const actual = getURLsFromHTML(inputBody, inputURL);
+    const expected = [
+      "https://crawler-test.com/path/some",
+      "https://crawler-test.com/path/nowhere",
+    ];
+    expect(actual).toEqual(expected);
+  });
+
+  test("getURLsFromHTML relative", () => {
+    const inputURL = "https://crawler-test.com";
+    const inputBody = `<html><body><a href="/path/one"><span>Boot.dev</span></a></body></html>`;
+    const actual = getURLsFromHTML(inputBody, inputURL);
+    const expected = ["https://crawler-test.com/path/one"];
+    expect(actual).toEqual(expected);
+  });
+
+  test("getURLsFromHTML both absolute and relative", () => {
+    const inputURL = "https://crawler-test.com";
+    const inputBody =
+      `<html><body>` +
+      `<a href="/path/one"><span>Boot.dev</span></a>` +
+      `<a href="https://other.com/path/one"><span>Boot.dev</span></a>` +
+      `</body></html>`;
+    const actual = getURLsFromHTML(inputBody, inputURL);
+    const expected = [
+      "https://crawler-test.com/path/one",
+      "https://other.com/path/one",
+    ];
+    expect(actual).toEqual(expected);
+  });
+});
+
+describe("Extract Images", () => {
+  test("getImagesFromHTML relative", () => {
+    const inputURL = "https://crawler-test.com";
+    const inputBody = `<html><body><img src="/logo.png" alt="Logo"></body></html>`;
+
+    const actual = getImagesFromHTML(inputBody, inputURL);
+    const expected = ["https://crawler-test.com/logo.png"];
+
+    expect(actual).toEqual(expected);
+  });
+
+  test("getImagesFromHTML relative", () => {
+    const inputURL = "https://crawler-test.com";
+    const inputBody = `<html><body><img src="/logo.png" alt="Logo"></body></html>`;
+    const actual = getImagesFromHTML(inputBody, inputURL);
+    const expected = ["https://crawler-test.com/logo.png"];
+    expect(actual).toEqual(expected);
+  });
+
+  test("getImagesFromHTML multiple", () => {
+    const inputURL = "https://crawler-test.com";
+    const inputBody =
+      `<html><body>` +
+      `<img src="/logo.png" alt="Logo">` +
+      `<img src="https://cdn.boot.dev/banner.jpg">` +
+      `</body></html>`;
+    const actual = getImagesFromHTML(inputBody, inputURL);
+    const expected = [
+      "https://crawler-test.com/logo.png",
+      "https://cdn.boot.dev/banner.jpg",
+    ];
     expect(actual).toEqual(expected);
   });
 });

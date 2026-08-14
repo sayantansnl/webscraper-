@@ -25,3 +25,34 @@ export function getFirstParagraphFromHTML(html: string): string {
   const paragraph = dom.window.document.querySelector(paragraphTag);
   return paragraph?.textContent.trim() ?? "";
 }
+
+export function getURLsFromHTML(html: string, baseURL: string): string[] {
+  const dom = new JSDOM(html);
+  let urls: string[] = [];
+
+  const anchors = dom.window.document.querySelectorAll("a");
+  anchors.forEach((anchor) => {
+    const hrefAttr = anchor.getAttribute("href");
+    if (!hrefAttr) return;
+    const url = new URL(hrefAttr, baseURL).toString();
+    urls.push(url);
+  });
+  return urls;
+}
+
+export function getImagesFromHTML(html: string, baseURL: string): string[] {
+  const dom = new JSDOM(html);
+  let imgURLs: string[] = [];
+
+  const images = dom.window.document.querySelectorAll("img");
+  images.forEach((image) => {
+    const srcAttr = image.getAttribute("src");
+    if (!srcAttr) {
+      return;
+    }
+    const url = new URL(srcAttr, baseURL).toString();
+    imgURLs.push(url);
+  });
+
+  return imgURLs;
+}
