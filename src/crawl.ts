@@ -63,7 +63,7 @@ export function getURLsFromHTML(html: string, baseURL: string): string[] {
 
 export function getImagesFromHTML(html: string, baseURL: string): string[] {
   const dom = new JSDOM(html);
-  let imgURLs: string[] = [];
+  const imgURLs: string[] = [];
 
   const images = dom.window.document.querySelectorAll("img");
   images.forEach((image) => {
@@ -76,4 +76,57 @@ export function getImagesFromHTML(html: string, baseURL: string): string[] {
   });
 
   return imgURLs;
+}
+
+export async function getHTML(url: string): Promise<string> {
+  let res;
+  try {
+    res = await fetch(url, {
+      method: "GET",
+      headers: {
+        "User-Agent": "Crawler/1.0",
+      },
+    });
+  } catch (err) {
+    console.error(`couldn't crawl site due to error: ${err}`);
+  }
+
+  const contentType = res!.headers.get("content-type");
+  if (!contentType || !contentType.includes("text/html")) {
+    console.log("Got non html response");
+  }
+
+  return res!.text();
+}
+
+export async function crawlPage(
+  baseURL: string,
+  currentURL: string = baseURL,
+  pages: Record<string, number> = {},
+): Promise<Record<string, number>> {
+  const parsedBaseURL = new URL(baseURL);
+  const parsedCurrentURL = new URL(currentURL);
+
+  if (parsedBaseURL.hostname !== parsedCurrentURL.hostname) {
+    return pages;
+  }
+
+  const normalizedCurrentURL = normalizeURL(currentURL);
+  if (normalizedCurrentURL in pages) {
+    pages[normalizedCurrentURL] += 1;
+    return pages;
+  }
+
+  pages[normalizedCurrentURL] = 1;
+
+  const html = await getHTML(currentURL);
+  console.log(`Crawling ${currentURL}`);
+  console.log("\n" + html);
+
+  const urls = getURLsFromHTML(html, currentURL);
+
+  for (const url of urls) {
+    pages = await crawlPage(currentURL, url, pages);
+  }
+  return pages;
 }
