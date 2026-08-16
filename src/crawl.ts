@@ -1,7 +1,7 @@
 import { JSDOM } from "jsdom";
 import pLimit from "p-limit";
 
-interface ExtractedPageData {
+export interface ExtractedPageData {
   url: string;
   heading: string;
   first_paragraph: string;
