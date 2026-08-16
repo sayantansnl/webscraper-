@@ -20,6 +20,14 @@ async function main() {
   const pagesCrawled = await crawlSiteAsync(url, maxConcurrency, maxPages);
   console.log(`Pages Crawled: `);
   console.log(pagesCrawled);
+
+  console.log("Finished crawling.");
+  const firstPage = Object.values(pagesCrawled)[0];
+  if (firstPage) {
+    console.log(
+      `First page record: ${firstPage["url"]} - ${firstPage["heading"]}`,
+    );
+  }
   process.exit(0);
 }
 

@@ -81,7 +81,7 @@ export function getImagesFromHTML(html: string, baseURL: string): string[] {
 
 class ConcurrentCrawler {
   private baseURL: string;
-  private pages: Record<string, number> = {};
+  private pages: Record<string, ExtractedPageData> = {};
   private limit: ReturnType<typeof pLimit>;
   private maxPages: number;
   private shouldStop: boolean = false;
@@ -98,12 +98,6 @@ class ConcurrentCrawler {
     if (this.shouldStop) {
       return false;
     }
-    if (normalizedURL in this.pages) {
-      this.pages[normalizedURL] += 1;
-    } else {
-      this.pages[normalizedURL] = 1;
-    }
-
     if (this.visited.has(normalizedURL)) {
       return false;
     }
@@ -162,10 +156,11 @@ class ConcurrentCrawler {
     console.log(`Now crawling ${currentURL}`);
     console.log("\n" + html);
 
-    const urls = getURLsFromHTML(html, currentURL);
+    const data = extractPageData(html, currentURL);
+    this.pages[normalizedCurrentURL] = data;
     const promises: Promise<void>[] = [];
 
-    for (const url of urls) {
+    for (const url of data.outgoing_links) {
       const task = this.crawlPage(url);
       promises.push(task);
       this.allTasks.add(task);
@@ -177,7 +172,7 @@ class ConcurrentCrawler {
     await Promise.all(promises);
   }
 
-  async crawl(): Promise<Record<string, number>> {
+  async crawl(): Promise<Record<string, ExtractedPageData>> {
     await this.crawlPage(this.baseURL);
 
     return this.pages;
@@ -188,7 +183,7 @@ export async function crawlSiteAsync(
   url: string,
   maxConcurrency: number,
   maxPages: number,
-): Promise<Record<string, number>> {
+): Promise<Record<string, ExtractedPageData>> {
   const crawler = new ConcurrentCrawler(url, maxConcurrency, maxPages);
   const pages = await crawler.crawl();
   return pages;
