@@ -4,6 +4,7 @@ import {
   writeEdgesReportFromURLToURL,
   writeJSONReportForPageData,
 } from "./report.js";
+import { generateGraphPNG } from "./graph.js";
 
 async function main() {
   const args = argv.slice(2);
@@ -42,6 +43,11 @@ async function main() {
 
   writeJSONReportForPageData(pageData);
   writeEdgesReportFromURLToURL(edges);
+
+  console.log("Crawling complete. Generating graph image...");
+  await generateGraphPNG(pageData, edges, "crawl-graph.png");
+  console.log("Saved graph visualization to crawl-graph.png");
+
   process.exit(0);
 }
 

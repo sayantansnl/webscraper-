@@ -173,8 +173,8 @@ class ConcurrentCrawler {
 
     for (const url of data.outgoing_links) {
       this.edges.push({
-        from: currentURL,
-        to: url,
+        from: normalizedCurrentURL,
+        to: normalizeURL(url),
       });
       const task = this.crawlPage(url);
       promises.push(task);
