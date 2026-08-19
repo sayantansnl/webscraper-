@@ -1,6 +1,9 @@
 import { argv } from "node:process";
 import { crawlSiteAsync } from "./crawl.js";
-import { writeJSONReport } from "./report.js";
+import {
+  writeEdgesReportFromURLToURL,
+  writeJSONReportForPageData,
+} from "./report.js";
 
 async function main() {
   const args = argv.slice(2);
@@ -37,7 +40,8 @@ async function main() {
     );
   }
 
-  writeJSONReport(pageData);
+  writeJSONReportForPageData(pageData);
+  writeEdgesReportFromURLToURL(edges);
   process.exit(0);
 }
 
