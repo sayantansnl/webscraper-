@@ -9,6 +9,16 @@ export interface ExtractedPageData {
   image_urls: string[];
 }
 
+export interface Edge {
+  from: string;
+  to: string;
+}
+
+export type Web = {
+  pageData: Record<string, ExtractedPageData>;
+  edges: Edge[];
+};
+
 export function extractPageData(
   html: string,
   pageURL: string,
@@ -87,6 +97,7 @@ class ConcurrentCrawler {
   private shouldStop: boolean = false;
   private allTasks: Set<Promise<void>> = new Set<Promise<void>>();
   private visited: Set<string> = new Set<string>();
+  private edges: Edge[] = [];
 
   constructor(baseURL: string, maxConcurrency: number, maxPages: number = 100) {
     this.baseURL = baseURL;
@@ -161,6 +172,10 @@ class ConcurrentCrawler {
     const promises: Promise<void>[] = [];
 
     for (const url of data.outgoing_links) {
+      this.edges.push({
+        from: currentURL,
+        to: url,
+      });
       const task = this.crawlPage(url);
       promises.push(task);
       this.allTasks.add(task);
@@ -174,8 +189,11 @@ class ConcurrentCrawler {
 
   async crawl(): Promise<Record<string, ExtractedPageData>> {
     await this.crawlPage(this.baseURL);
-
     return this.pages;
+  }
+
+  showEdges(): Edge[] {
+    return this.edges;
   }
 }
 
@@ -183,8 +201,13 @@ export async function crawlSiteAsync(
   url: string,
   maxConcurrency: number,
   maxPages: number,
-): Promise<Record<string, ExtractedPageData>> {
+): Promise<Web> {
   const crawler = new ConcurrentCrawler(url, maxConcurrency, maxPages);
   const pages = await crawler.crawl();
-  return pages;
+
+  const edges = crawler.showEdges();
+  return {
+    pageData: pages,
+    edges: edges,
+  };
 }

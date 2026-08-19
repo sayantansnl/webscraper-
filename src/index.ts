@@ -18,19 +18,26 @@ async function main() {
 
   console.log(`Crawling starting at ${url}`);
 
-  const pagesCrawled = await crawlSiteAsync(url, maxConcurrency, maxPages);
+  const { pageData, edges } = await crawlSiteAsync(
+    url,
+    maxConcurrency,
+    maxPages,
+  );
   console.log(`Pages Crawled: `);
-  console.log(pagesCrawled);
+  console.log(pageData);
+
+  console.log("Edges formed: ");
+  console.log(edges);
 
   console.log("Finished crawling.");
-  const firstPage = Object.values(pagesCrawled)[0];
+  const firstPage = Object.values(pageData)[0];
   if (firstPage) {
     console.log(
       `First page record: ${firstPage["url"]} - ${firstPage["heading"]}`,
     );
   }
 
-  writeJSONReport(pagesCrawled);
+  writeJSONReport(pageData);
   process.exit(0);
 }
 
