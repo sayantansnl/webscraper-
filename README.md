@@ -37,6 +37,7 @@ protocol differences, or query parameters.
 ## Usage
 
 Run the crawler by providing the starting URL, the maximum concurrency level, and the maximum page limit.
+
 `npm run start "<URL>" <concurrency> <maxPages>`
 
 Example: `npm run start "https://learnwebscraping.dev/practice/ecommerce/" 2 20`
