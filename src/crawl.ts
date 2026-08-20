@@ -14,7 +14,7 @@ export interface Edge {
   to: string;
 }
 
-export type Web = {
+export type WebData = {
   pageData: Record<string, ExtractedPageData>;
   edges: Edge[];
 };
@@ -201,7 +201,7 @@ export async function crawlSiteAsync(
   url: string,
   maxConcurrency: number,
   maxPages: number,
-): Promise<Web> {
+): Promise<WebData> {
   const crawler = new ConcurrentCrawler(url, maxConcurrency, maxPages);
   const pages = await crawler.crawl();
 

@@ -60,11 +60,9 @@ export async function generateGraphPNG(
   const pageUrls = Object.keys(pages);
   const nodeMap = computeCircularLayout(pageUrls, width, height);
 
-  // Background
   ctx.fillStyle = "#1e1e2e";
   ctx.fillRect(0, 0, width, height);
 
-  // Draw Edges (Lines)
   ctx.strokeStyle = "#89b4fa";
   ctx.lineWidth = 2;
 
@@ -85,15 +83,12 @@ export async function generateGraphPNG(
     `Rendered ${nodeMap.size} nodes and ${edgesDrawn} edges to graph.`,
   );
 
-  // Draw Nodes (Using rectangles to avoid pure-image arc warnings)
   ctx.font = "14pt IBMPlexMono";
 
   for (const node of nodeMap.values()) {
-    // Node box
     ctx.fillStyle = "#a6e3a1";
     ctx.fillRect(node.x - boxSize / 2, node.y - boxSize / 2, boxSize, boxSize);
 
-    // Text label
     ctx.fillStyle = "#ffffff";
     ctx.fillText(node.label, node.x - boxSize / 2, node.y - boxSize);
   }

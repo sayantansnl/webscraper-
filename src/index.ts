@@ -27,11 +27,6 @@ async function main() {
     maxConcurrency,
     maxPages,
   );
-  console.log(`Pages Crawled: `);
-  console.log(pageData);
-
-  console.log("Edges formed: ");
-  console.log(edges);
 
   console.log("Finished crawling.");
   const firstPage = Object.values(pageData)[0];
