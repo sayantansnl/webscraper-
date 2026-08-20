@@ -17,6 +17,7 @@ protocol differences, or query parameters.
 ---
 
 ## Tech stack
+
 - **Runtime**: [Node.js](https://nodejs.org/)
 - **Language**: [TypeScript](https://www.typescriptlang.org)
 - **Concurrency**: `p-limit`
@@ -51,3 +52,5 @@ Example: `npm run start "https://learnwebscraping.dev/practice/ecommerce/" 2 20`
 3. **Canvas Drawing**: `pureimage` draws background canvas, connecting lines between linked pages, node blocks, and URL pathname labels.
 
 ---
+
+Consider starring the repository if you found this useful.
