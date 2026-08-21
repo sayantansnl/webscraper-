@@ -5,6 +5,16 @@ A fast, concurrent web scraper written in TypeScript. It traverses a target webs
 
 ---
 
+## Demo
+
+I used WebWeaver to crawl the website of one of my favourite authors: James Ellroy.
+
+`npm run start https://www.jamesellroy.net/ 5 25`
+
+<img width="1200" height="900" alt="crawl-graph" src="https://github.com/user-attachments/assets/33a854f8-8f7b-45bc-8aa3-a513d0d5926a" />
+
+It generated a PNG file `crawl-graph.png` which shows the interconnectivity of various URLs within the same domain.
+
 ## Features 
 
 - **Concurrent Crawling**: Utilizes concurrency controls to fetch multiple pages in parallel without overwhelming the target server.
